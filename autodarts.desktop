@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Autodarts
+Comment=Start Autodarts service and open browser
+Icon=autodarts
+Exec=/usr/local/bin/autodarts-launcher
+Terminal=true
+Categories=Game;Network;

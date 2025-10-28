@@ -14,7 +14,7 @@ A simple launcher for [Autodarts](https://autodarts.io) on Arch-based distributi
 ## Installation
 
 ```bash
-git clone https://github.com/yourusername/autodarts-client-arch-launcher.git
+git clone https://github.com/dmall00/autodarts-client-arch-launcher.git
 cd autodarts-client-arch-launcher
 makepkg -si
 ```

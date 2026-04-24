@@ -51,7 +51,48 @@ cleanup() {
     fi
 }
 
+update_autodarts() {
+    SERVICE_TYPE=$(detect_service_type)
+
+    if [ "$SERVICE_TYPE" != "none" ]; then
+        echo "Stopping autodarts service before update..."
+        if [ "$SERVICE_TYPE" = "user" ]; then
+            systemctl --user stop autodarts 2>/dev/null
+        else
+            if ! systemctl stop autodarts 2>/dev/null; then
+                sudo systemctl stop autodarts 2>/dev/null
+            fi
+        fi
+    fi
+
+    echo "Downloading and running the latest Autodarts installer..."
+    INSTALL_SCRIPT=$(mktemp)
+    curl -sL get.autodarts.io -o "$INSTALL_SCRIPT"
+    sudo bash "$INSTALL_SCRIPT"
+    rm -f "$INSTALL_SCRIPT"
+
+    echo ""
+    echo "Update complete. Restarting autodarts service..."
+
+    SERVICE_TYPE=$(detect_service_type)
+
+    if [ "$SERVICE_TYPE" = "user" ]; then
+        systemctl --user start autodarts
+    else
+        if ! systemctl start autodarts 2>/dev/null; then
+            sudo systemctl start autodarts
+        fi
+    fi
+
+    echo "Autodarts updated and restarted successfully."
+    exit 0
+}
+
 trap cleanup EXIT
+
+if [ "$1" = "update" ]; then
+    update_autodarts
+fi
 
 # Check and install if needed (only prompts for sudo if not installed)
 install_autodarts

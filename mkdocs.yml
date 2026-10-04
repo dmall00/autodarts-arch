@@ -1,0 +1,56 @@
+site_name: Autodarts Arch
+site_description: A terminal-first launcher for Autodarts v2 on Arch Linux.
+repo_url: https://github.com/dmall00/autodarts-arch
+repo_name: dmall00/autodarts-arch
+edit_uri: edit/master/docs/
+theme:
+  name: material
+  language: en
+  font: false
+  icon:
+    logo: material/target
+  palette:
+    - scheme: slate
+      primary: custom
+      accent: lime
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+    - scheme: default
+      primary: custom
+      accent: teal
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - content.action.edit
+    - search.suggest
+    - search.highlight
+plugins:
+  - search
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+extra_css:
+  - stylesheets/extra.css
+nav:
+  - Overview: index.md
+  - Get Started:
+      - Install: installation.md
+      - Configure Your Board: board-setup.md
+  - Daily Use:
+      - Commands: commands.md
+      - Services & Remote Access: operations.md
+  - Maintenance:
+      - Migration & Troubleshooting: troubleshooting.md
+      - Documentation & Sources: contributing.md

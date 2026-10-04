@@ -1,8 +1,8 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=Autodarts
-Comment=Start Autodarts service and open browser
+Name=Autodarts Launcher
+Comment=Open Autodarts Play and the v2 board terminal app
 Icon=autodarts
 Exec=/usr/bin/autodarts-launcher
 Terminal=true

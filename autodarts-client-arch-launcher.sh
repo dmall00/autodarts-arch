@@ -5,11 +5,12 @@ show_usage() {
     echo ""
     echo "Commands:"
     echo "  (none)    Start autodarts and open the browser"
-    echo "  update    Re-pull and reinstall autodarts from get.autodarts.io"
+    echo "  update    Re-pull and reinstall autodarts from https://autodarts.sh"
     echo ""
 }
 
-# Detect if autodarts is a user service or system service
+BASE_URL="https://autodarts.sh"
+
 detect_service_type() {
     if systemctl --user list-unit-files | grep -q "autodarts.service"; then
         echo "user"
@@ -24,17 +25,15 @@ install_autodarts() {
     SERVICE_TYPE=$(detect_service_type)
     if [ "$SERVICE_TYPE" = "none" ]; then
         echo "Autodarts not found. Installing latest version..."
-        echo "This requires sudo privileges for installation..."
         echo ""
 
         INSTALL_SCRIPT=$(mktemp)
-        curl -sL get.autodarts.io -o "$INSTALL_SCRIPT"
-        sudo bash "$INSTALL_SCRIPT"
+        curl -fsSL "$BASE_URL/sh/install.sh" -o "$INSTALL_SCRIPT"
+        bash "$INSTALL_SCRIPT" --headless
         rm -f "$INSTALL_SCRIPT"
 
         echo ""
         echo "Installation complete!"
-        echo "Please log out and log back in for group permissions to take effect."
         echo "After re-login, you can run this launcher."
         exit 0
     fi
@@ -49,19 +48,18 @@ update_autodarts() {
             systemctl --user stop autodarts 2>/dev/null
         else
             if ! systemctl stop autodarts 2>/dev/null; then
-                sudo systemctl stop autodarts 2>/dev/null
+                systemctl stop autodarts 2>/dev/null
             fi
         fi
         echo "Service stopped."
     fi
 
     echo "Updating autodarts..."
-    echo "This requires sudo privileges..."
     echo ""
 
     INSTALL_SCRIPT=$(mktemp)
-    curl -sL get.autodarts.io -o "$INSTALL_SCRIPT"
-    sudo bash "$INSTALL_SCRIPT"
+    curl -fsSL "$BASE_URL/sh/install.sh" -o "$INSTALL_SCRIPT"
+    bash "$INSTALL_SCRIPT" --headless
     rm -f "$INSTALL_SCRIPT"
 
     echo ""
@@ -74,7 +72,7 @@ update_autodarts() {
             systemctl --user start autodarts
         else
             if ! systemctl start autodarts 2>/dev/null; then
-                sudo systemctl start autodarts
+                systemctl start autodarts
             fi
         fi
         echo "Service started."
@@ -95,11 +93,10 @@ cleanup() {
         if [ "$SERVICE_TYPE" = "user" ]; then
             systemctl --user stop autodarts 2>/dev/null
         else
-            # For system service, check if we need sudo
+            # For system service, try without sudo first
             if systemctl stop autodarts 2>/dev/null; then
                 echo "Service stopped."
             else
-                sudo systemctl stop autodarts 2>/dev/null
                 echo "Service stopped."
             fi
         fi
@@ -132,10 +129,10 @@ echo "Starting autodarts service..."
 if [ "$SERVICE_TYPE" = "user" ]; then
     systemctl --user start autodarts
 else
-    # Try without sudo first, fall back to sudo if needed
+    # Try without sudo first, fall back to user service
     if ! systemctl start autodarts 2>/dev/null; then
-        echo "System service detected. Requesting sudo for service management..."
-        sudo systemctl start autodarts
+        echo "System service detected. Trying to start user service..."
+        systemctl --user start autodarts
     fi
 fi
 
@@ -158,6 +155,6 @@ if [ "$SERVICE_TYPE" = "user" ]; then
 else
     # Try without sudo first
     if ! journalctl -u autodarts -f 2>/dev/null; then
-        sudo journalctl -u autodarts -f
+        journalctl -u autodarts -f
     fi
 fi
